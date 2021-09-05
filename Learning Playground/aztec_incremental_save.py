@@ -1,5 +1,6 @@
 import bpy
 import datetime
+import os
 
 # Idea Flow
 # 0. Always active on save(). Maybe with some event handler if Python has those?
@@ -22,31 +23,31 @@ import datetime
 # https://docs.blender.org/api/current/bpy.app.handlers.html
 # bpy.app.handlers.save_post
 
-def month_abbrev(input:int) -> str:
-    converter = {
-        1: "JAN",
-        2: "FEB",
-        3: "MAR",
-        4: "APR",
-        5: "MAY",
-        6: "JUN",
-        7: "JUL",
-        8: "AUG",
-        9: "SEP",
-        10: "OCT",
-        11: "NOV",
-        12: "DEC"
-    }
-
-    return converter.get(input, "WAT")
+month_id = {
+    1: "JAN",
+    2: "FEB",
+    3: "MAR",
+    4: "APR",
+    5: "MAY",
+    6: "JUN",
+    7: "JUL",
+    8: "AUG",
+    9: "SEP",
+    10: "OCT",
+    11: "NOV",
+    12: "DEC"
+}
 
 filepath = bpy.data.filepath
 filename = filepath.split('\\')[-1]
 
 now = datetime.datetime.now()
+time_suffix = "_" + month_id[now.month] + str(now.day).zfill(2) + "_" + str(now.hour).zfill(2) + '-' + str(now.minute).zfill(2)
+backup_filename = filename.replace(".blend", time_suffix + ".blend")
 
+savefolder = filepath.replace(".blend", "") + '\\'
+print(savefolder)
+if not os.path.exists(savefolder):
+    os.makedirs(savefolder)
 
-time_suf = "_" + month_abbrev(now.month) + str(now.day) + "_" + str(now.hour) + 'H' + str(now.minute) + 'M'
-backup_filename = filename.replace(".blend", time_suf + ".blend")
-
-print(backup_filename)
+bpy.ops.wm.save_as_mainfile(filepath=savefolder + backup_filename, copy=True)
