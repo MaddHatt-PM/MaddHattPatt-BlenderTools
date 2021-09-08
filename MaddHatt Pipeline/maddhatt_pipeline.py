@@ -21,25 +21,22 @@ class VIEW3D_PT_pipeline(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
         
-        if any(col.name == "MidPoly" for col in bpy.data.collections):
-            row = layout.row()
-            row.label(text="MidPoly Exists")
+        # Check if MidPoly collection exist
+        if any(col.name == "MidPoly" for col in bpy.data.collections) == False:
+            layout.operator("maddhatt.setup_midpoly", text="Create MidPoly Collection")
 
-        else:
-            row = layout.row()
-            col_midpoly = bpy.data.collections.new("MidPoly")
-            bpy.context.scene.collection.children.link(col_midpoly)
+        obj_count = len(bpy.data.collections.get("MidPoly").all_objects)
+        row = layout.row
+        row = layout.label(text=str(obj_count))
 
-        # for coll in bpy.data.collections:
-        #     row = layout.row()
-        #     row.label(text = coll.name)
 
 class MADDHATT_OT_setup_midpoly(bpy.types.Operator):
     bl_idname = "maddhatt.setup_midpoly"
     bl_label = "Setup mid poly"
 
     def execute(self, context):
-        print("maddhatt.setup_from_midpoly_collection was called")
+        col_midpoly = bpy.data.collections.new("MidPoly")
+        bpy.context.scene.collection.children.link(col_midpoly)
         return {'FINISHED'}
 
 # Class registration
