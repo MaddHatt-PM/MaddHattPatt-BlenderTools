@@ -1,4 +1,5 @@
 import bpy
+from bpy.types import Panel
 
 # Addon info
 bl_info = {
@@ -11,6 +12,28 @@ bl_info = {
     "category": "3D View"
     }
 
+class VIEW3D_PT_pipeline(bpy.types.Panel):
+    bl_space_type = 'VIEW_3D'
+    bl_region_type = 'UI'
+    bl_category = "Pipeline Tools"
+    bl_label = "Pipeline tools"
+
+    def draw(self, context):
+        layout = self.layout
+        
+        if any(col.name == "MidPoly" for col in bpy.data.collections):
+            row = layout.row()
+            row.label(text="MidPoly Exists")
+
+        else:
+            row = layout.row()
+            col_midpoly = bpy.data.collections.new("MidPoly")
+            bpy.context.scene.collection.children.link(col_midpoly)
+
+        # for coll in bpy.data.collections:
+        #     row = layout.row()
+        #     row.label(text = coll.name)
+
 class MADDHATT_OT_setup_midpoly(bpy.types.Operator):
     bl_idname = "maddhatt.setup_midpoly"
     bl_label = "Setup mid poly"
@@ -20,13 +43,17 @@ class MADDHATT_OT_setup_midpoly(bpy.types.Operator):
         return {'FINISHED'}
 
 # Class registration
-reg_classes = [
-    MADDHATT_OT_setup_midpoly]
+reg_classes = (
+    MADDHATT_OT_setup_midpoly,
+    VIEW3D_PT_pipeline)
 
 def register():
-    for item in reg_classes:
-        bpy.utils.register_class(item)
+    bpy.utils.register_class(MADDHATT_OT_setup_midpoly)
+    bpy.utils.register_class(VIEW3D_PT_pipeline)
 
 def unregister():
-    for item in reg_classes:
-        bpy.utils.unregister_class(item)
+    bpy.utils.unregister_class(MADDHATT_OT_setup_midpoly)
+    bpy.utils.unregister_class(VIEW3D_PT_pipeline)        
+
+if __name__ == "__main__":
+    register()
