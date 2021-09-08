@@ -33,6 +33,11 @@ A collection of tools to help my personal workflow. Also includes files to sync 
         3. Prompt the user to hide matches.
         4. If user continues, unload collections, then load low_poly and high_poly to reset all their visibility states
         5. Iterate through all pairings until no pairings are left
+    - [ ] Low Poly Prep
+        1. Go through Low_Poly collection mesh by mesh
+            1. Turn on all auto smooth and set to
+            2. Remove edges marked sharp
+            3. Convert UV island edges to sharpness
     - [ ] Quick Export
         - Both operations will use the final_export preset I have for low poly
         - [ ] Folder path input
