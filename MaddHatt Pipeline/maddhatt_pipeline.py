@@ -28,6 +28,7 @@ class VIEW3D_PT_pipeline(bpy.types.Panel):
         # Check if MidPoly collection exist
         if any(col.name == "To_Organize" for col in bpy.data.collections) == False:
             layout.operator("maddhatt.create_collection", text="Add To_Organize Collection").action = "make_to_organize_coll"
+            
             # return {"FINSIHED"}
         else:
             layout.label(text="To_Organize collection exists")
@@ -46,13 +47,26 @@ class MADDHATT_OT_create_collection(Operator):
     bl_label = "You shouldn't be seeing this"
     bl_options = { "INTERNAL", "REGISTER", "UNDO_GROUPED"}
 
-    collection_name: StringProperty()
+    action: bpy.props.EnumProperty(
+        items=[
+            ("make_to_organize_coll", "", ""),
+            ("make_low_coll", "", ""),
+            ("make_mid_coll", "", ""),
+            ("make_high_coll", "", "")]
+    )
 
     def execute(self, context):
-        col = bpy.data.collections.new(self.collection_name)
-        bpy.context.scene.collection.children.link(col)
+        if self.action == "make_to_organize_coll":self.create_collection(context=context, name = "To_Organize")
+        elif self.action == "make_low_coll": self.create_collection(context=context, name = "Low_Poly")
+        elif self.action == "make_mid_coll": self.create_collection(context=context, name = "Mid_Poly")
+        elif self.action == "make_high_coll": self.create_collection(context=context, name = "High_Poly")
 
         return {"FINISHED"}
+
+    @staticmethod
+    def create_collection(context, name):
+        col = bpy.data.collections.new(name)
+        bpy.context.scene.collection.children.link(col)
 
 class MADDHATT_OT_create_material(bpy.types.Operator):
     bl_idname = "maddhatt.create_material"
@@ -63,7 +77,7 @@ class MADDHATT_OT_create_material(bpy.types.Operator):
 
     def execute(self, context):
         mat = bpy.data.materials.new("ID_" + str(self.mat_id).zfill(2))
-        mat.diffuse_color = (random.random(), 1, 1, 1)
+        mat.diffuse_color = (random.random(), 1, 1, 1) # RGB values, I want HSL
 
         return {"FINISHED"}
 
