@@ -9,6 +9,8 @@ bl_info = {
     }
 
 import bpy
+import random
+from bpy.props import StringProperty
 from bpy.types import EnumProperty, Operator
 
 # ---------------------------------------------------------------------------
@@ -25,62 +27,59 @@ class VIEW3D_PT_pipeline(bpy.types.Panel):
         
         # Check if MidPoly collection exist
         if any(col.name == "To_Organize" for col in bpy.data.collections) == False:
-            layout.operator("maddhatt.multi_tool", text="Add To_Organize Collection").action = "make_to_organize_coll"
-            return {"FINSIHED"}
+            layout.operator("maddhatt.create_collection", text="Add To_Organize Collection").action = "make_to_organize_coll"
+            # return {"FINSIHED"}
+        else:
+            layout.label(text="To_Organize collection exists")
 
-        obj_count = len(bpy.data.collections.get("To_Organize").all_objects)
-        row = layout.row
-        row = layout.label(text=str(obj_count))
+        layout.operator("maddhatt.create_material", text="Create material").mat_id = random.randint(1, 999)
+
+        # obj_count = len(bpy.data.collections.get("To_Organize").all_objects)
+        # row = layout.row
+        # row = layout.label(text=str(obj_count))
 
 # ---------------------------------------------------------------------------
 # --- Operators ---
 # -----------------
-class MADDHATT_OT_multi_tool(Operator):
-    bl_idname = "maddhatt.multi_tool"
+class MADDHATT_OT_create_collection(Operator):
+    bl_idname = "maddhatt.create_collection"
     bl_label = "You shouldn't be seeing this"
     bl_options = { "INTERNAL", "REGISTER", "UNDO_GROUPED"}
 
-    action: bpy.props.EnumProperty(
-        items=[
-            ("make_to_organize_coll", "", ""),
-            ("make_low_coll", "", ""),
-            ("make_mid_coll", "", ""),
-            ("make_high_coll", "", "")]
-    )
+    collection_name: StringProperty()
 
     def execute(self, context):
-        if self.action == "make_to_organize_coll":self.create_collection(context=context, name = "To_Organize")
-        elif self.action == "make_low_coll": self.create_collection(context=context, name = "Low_Poly")
-        elif self.action == "make_mid_coll": self.create_collection(context=context, name = "Mid_Poly")
-        elif self.action == "make_high_coll": self.create_collection(context=context, name = "High_Poly")
+        col = bpy.data.collections.new(self.collection_name)
+        bpy.context.scene.collection.children.link(col)
 
         return {"FINISHED"}
 
-    @staticmethod
-    def create_collection(context, name):
-        col = bpy.data.collections.new(name)
-        bpy.context.scene.collection.children.link(col)
+class MADDHATT_OT_create_material(bpy.types.Operator):
+    bl_idname = "maddhatt.create_material"
+    bl_label = "You shouldn't be seeing this"
+    bl_options = { "INTERNAL", "REGISTER", "UNDO_GROUPED"}
 
-class MADDHATT_OT_setup_midpoly(bpy.types.Operator):
-    bl_idname = "maddhatt.setup_midpoly"
-    bl_label = "Setup mid poly"
+    mat_id: bpy.props.IntProperty(name="mat_id")
 
     def execute(self, context):
-        col_midpoly = bpy.data.collections.new("MidPoly")
-        bpy.context.scene.collection.children.link(col_midpoly)
-        return {'FINISHED'}
+        mat = bpy.data.materials.new("ID_" + str(self.mat_id).zfill(2))
+        mat.diffuse_color = (random.random(), 1, 1, 1)
+
+        return {"FINISHED"}
+
+
 
 # ---------------------------------------------------------------------------
 # --- Class registration ---
 # --------------------------
 def register():
-    bpy.utils.register_class(MADDHATT_OT_multi_tool)
-    bpy.utils.register_class(MADDHATT_OT_setup_midpoly)
+    bpy.utils.register_class(MADDHATT_OT_create_material)
+    bpy.utils.register_class(MADDHATT_OT_create_collection)
     bpy.utils.register_class(VIEW3D_PT_pipeline)
 
 def unregister():
-    bpy.utils.unregister_class(MADDHATT_OT_multi_tool)
-    bpy.utils.unregister_class(MADDHATT_OT_setup_midpoly)
+    bpy.utils.unregister_class(MADDHATT_OT_create_material)
+    bpy.utils.unregister_class(MADDHATT_OT_create_collection)
     bpy.utils.unregister_class(VIEW3D_PT_pipeline)        
 
 if __name__ == "__main__":
