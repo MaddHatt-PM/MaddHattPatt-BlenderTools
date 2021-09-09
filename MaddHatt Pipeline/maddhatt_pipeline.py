@@ -10,6 +10,7 @@ bl_info = {
 
 import bpy
 import random
+import colorsys
 from bpy.props import StringProperty
 from bpy.types import EnumProperty, Operator
 
@@ -28,12 +29,17 @@ class VIEW3D_PT_pipeline(bpy.types.Panel):
         # Check if MidPoly collection exist
         if any(col.name == "To_Organize" for col in bpy.data.collections) == False:
             layout.operator("maddhatt.create_collection", text="Add To_Organize Collection").action = "make_to_organize_coll"
-            
+
             # return {"FINSIHED"}
         else:
             layout.label(text="To_Organize collection exists")
 
-        layout.operator("maddhatt.create_material", text="Create material").mat_id = random.randint(1, 999)
+        matcount = len(bpy.data.materials)
+
+        layout.operator("maddhatt.create_material", text="Create material").mat_id = matcount
+
+        for id in range(0, matcount):
+            layout.operator("maddhatt.assign_material", text="Assign mat" + str(id)).mat_id = id
 
         # obj_count = len(bpy.data.collections.get("To_Organize").all_objects)
         # row = layout.row
@@ -77,21 +83,56 @@ class MADDHATT_OT_create_material(bpy.types.Operator):
 
     def execute(self, context):
         mat = bpy.data.materials.new("ID_" + str(self.mat_id).zfill(2))
-        mat.diffuse_color = (random.random(), 1, 1, 1) # RGB values, I want HSL
+
+        id = float(self.mat_id)
+
+        h = (id * 0.175) % 1.0
+        s = 1 - (id // 6 * 0.1314)
+        v = 1 - (id // 3 * 0.045)
+        difcolor = colorsys.hsv_to_rgb(h,s,v)
+        mat.diffuse_color = (difcolor[0], difcolor[1], difcolor[2], 1.0) 
+        print (h, s, v)
+
+        return {"FINISHED"}
+        
+class MADDHATT_OT_assign_material(bpy.types.Operator):
+    bl_idname = "maddhatt.assign_material"
+    bl_label = "You shouldn't be seeing this"
+    bl_options = { "INTERNAL", "REGISTER", "UNDO_GROUPED"}
+
+    mat_id: bpy.props.IntProperty(name="mat_id")
+
+    @classmethod
+    def poll(cls, context):
+        obj = context.active_object
+        return obj is not None and obj.type == "MESH" 
+
+    def execute(self, context):
+        id = "ID_" + str(self.mat_id).zfill(2)
+        for item in bpy.data.materials.keys():
+            if (item.startswith(id)):
+                id = item
+
+        mat = bpy.data.materials.get(id)
+        mesh = bpy.context.active_object.data
+        mesh.materials.clear()
+        mesh.materials.append(mat)
 
         return {"FINISHED"}
 
-
+        
 
 # ---------------------------------------------------------------------------
 # --- Class registration ---
 # --------------------------
 def register():
+    bpy.utils.register_class(MADDHATT_OT_assign_material)
     bpy.utils.register_class(MADDHATT_OT_create_material)
     bpy.utils.register_class(MADDHATT_OT_create_collection)
     bpy.utils.register_class(VIEW3D_PT_pipeline)
 
 def unregister():
+    bpy.utils.unregister_class(MADDHATT_OT_assign_material)
     bpy.utils.unregister_class(MADDHATT_OT_create_material)
     bpy.utils.unregister_class(MADDHATT_OT_create_collection)
     bpy.utils.unregister_class(VIEW3D_PT_pipeline)        
