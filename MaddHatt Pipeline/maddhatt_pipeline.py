@@ -98,25 +98,46 @@ class MADDHATT_OT_create_material(bpy.types.Operator):
 class MADDHATT_OT_assign_material(bpy.types.Operator):
     bl_idname = "maddhatt.assign_material"
     bl_label = "You shouldn't be seeing this"
-    bl_options = { "INTERNAL", "REGISTER", "UNDO_GROUPED"}
+    bl_options = { "INTERNAL", "REGISTER", "UNDO"}
 
     mat_id: bpy.props.IntProperty(name="mat_id")
 
     @classmethod
     def poll(cls, context):
         obj = context.active_object
-        return obj is not None and obj.type == "MESH" 
+        return obj is not None and obj.type == "MESH"
 
     def execute(self, context):
-        id = "ID_" + str(self.mat_id).zfill(2)
+        i = "ID_" + str(self.mat_id).zfill(2)
         for item in bpy.data.materials.keys():
-            if (item.startswith(id)):
-                id = item
+            if (item.startswith(i)):
+                i = item
 
-        mat = bpy.data.materials.get(id)
-        mesh = bpy.context.active_object.data
-        mesh.materials.clear()
-        mesh.materials.append(mat)
+        mat = bpy.data.materials.get(i)
+
+        for sel_obj in bpy.context.selected_objects:
+            if sel_obj.type != "MESH":
+                continue
+
+            if (context.mode == "OBJECT"):
+                sel_obj.data.materials.clear()
+                sel_obj.data.materials.append(mat)
+
+            elif (context.mode == "EDIT_MESH"):
+                slotID = -1
+                i = 0
+                for mat_slot in sel_obj.material_slots:
+                    if (mat == mat_slot.material):
+                        slotID = i
+                        break
+                    i += 1
+
+                if slotID == -1:
+                    sel_obj.data.materials.append(mat)
+                    slotID = len(sel_obj.data.materials) - 1
+
+                sel_obj.active_material_index = slotID
+                bpy.ops.object.material_slot_assign()
 
         return {"FINISHED"}
 
