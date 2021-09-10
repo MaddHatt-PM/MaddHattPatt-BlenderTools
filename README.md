@@ -6,7 +6,7 @@ A collection of tools to help my personal workflow. Also includes files to sync 
 - [ ] MaddHatt Pipeline Tool
     - [ ] Quick ID Mats
         - [x] Create ID Mat
-        - [ ] Create random colors for ID purposes at least 10 distinct ones should be good
+        - [x] Create random colors for ID purposes at least 10 distinct ones should be good
         - [ ] Create buttons for other ID colors
         - Give the user a list of mats with prefix 'ID_' and an option to create a new mat with a randomized color. For randomized colors, reference a premade tuple of colors
         - When in edit mesh mode with face mode on, non added materials should be greyed out. When clicked the add to the mesh's material list and then are no longer greyed out.
