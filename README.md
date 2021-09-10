@@ -3,6 +3,11 @@ A collection of tools to help my personal workflow. Also includes files to sync 
 
 ## Task List
 - [x] Incremental save from another 3d modeling program
+- [ ] Workflow Tools
+    - [x] Circular Array Setup Operator
+    - [ ] Circular Array editor
+        - [ ] 1. Check the array name, who changes the array name and if 
+        - [ ] 2. Change the count value and change the rotation of the offset object
 - [ ] MaddHatt Pipeline Tool
     - [ ] Quick ID Mats
         - [x] Create ID Mat
@@ -12,9 +17,9 @@ A collection of tools to help my personal workflow. Also includes files to sync 
         - When in edit mesh mode with face mode on, non added materials should be greyed out. When clicked the add to the mesh's material list and then are no longer greyed out.
     - [ ] Mid Poly Setup
         - [ ] 1. Create backup save
-        - [ ] 2. Target a specific collection
+        - [x] 2. Target a specific collection
         - [ ] 3. Unparent all objects with transformation so they're on the same level
-        - [ ] 4. Create _TOOLS collections
+        - [x] 4. Create _TOOLS collections
         - [ ] 5. Move all hidden objects to _TOOLS
         - [ ] 6. Everything else gets moved to Mid_Poly collection (create if not already made) 
         - [ ] 7. Rename everything in Mid_Poly (Optional) to ie: Part05
