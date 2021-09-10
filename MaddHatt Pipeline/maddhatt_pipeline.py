@@ -11,7 +11,8 @@ bl_info = {
 import bpy
 import random
 import colorsys
-from bpy.props import StringProperty
+import math
+from bpy.props import IntProperty, StringProperty
 from bpy.types import EnumProperty, Operator
 
 # ---------------------------------------------------------------------------
@@ -26,30 +27,74 @@ class VIEW3D_PT_pipeline(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
         
+        layout.label(text="Workflow Helpers")
+        layout.operator("maddhatt.setup_circular_array", text="Create circular array")
+
+        layout.separator()
+        layout.label(text="Pipeline Managers")
         # Check if MidPoly collection exist
-        if any(col.name == "To_Organize" for col in bpy.data.collections) == False:
-            layout.operator("maddhatt.create_collection", text="Add To_Organize Collection").action = "make_to_organize_coll"
+        if any(col.name == "Organizer" for col in bpy.data.collections) == False:
+            layout.operator("maddhatt.create_collection", text="Add Organizer Collection").action = "make_to_organize_coll"
 
             # return {"FINSIHED"}
         else:
             layout.label(text="To_Organize collection exists")
 
+        layout.operator("maddhatt.process_object", text="Process Object")
+
         matcount = len(bpy.data.materials)
 
         layout.operator("maddhatt.create_material", text="Create material").mat_id = matcount
 
+        layout.label(text="Material IDs")
         for mat_id in range(0, matcount):
-            mat_name = mat_id.name[start: 6]
-            
-            layout.operator("maddhatt.assign_material", text="Assign mat" + str(mat_id)).mat_id = mat_id
+            # mat_name = mat_id.name[6:]
+            mat_name = bpy.data.materials[mat_id].name
+            layout.operator("maddhatt.assign_material", text="Assign " + mat_name).mat_id = mat_id
 
         # obj_count = len(bpy.data.collections.get("To_Organize").all_objects)
         # row = layout.row
         # row = layout.label(text=str(obj_count))
 
 # ---------------------------------------------------------------------------
-# --- Operators ---
-# -----------------
+# --- Workflow Tools ---
+#-----------------------
+class MADDHATT_OT_setup_circular_array(bpy.types.Operator):
+    bl_idname = "maddhatt.setup_circular_array"
+    bl_label = "Circular Array Setup"
+    bl_options = {"REGISTER", "UNDO"}
+
+    copy_count: IntProperty(name="Copy Count", default=3, min=2, soft_max=18)
+    axis_id: IntProperty(name="Axis ID", default=2, min=0, max=2)
+
+    # @classmethod
+    # def poll(cls, context):
+    #     return context.active_object != NoneType
+
+    def execute(self, context):
+        # Object offset setup
+        util_obj = bpy.data.objects.new(bpy.context.object.name + "_CircularUtil" , None)
+        bpy.context.scene.collection.objects.link(util_obj)
+        util_obj.parent = bpy.context.object
+        rot_amount = 360.0 / float(self.copy_count)
+        util_obj.rotation_euler[self.axis_id] = math.radians(rot_amount)
+
+        # Array Modifier setup
+        bpy.ops.object.modifier_add(type="ARRAY")
+        array_mod = bpy.context.object.modifiers[-1]
+        array_mod.count = self.copy_count
+        array_mod.name = "Circular Array"
+        array_mod.use_relative_offset = False
+        array_mod.use_object_offset = True
+        array_mod.offset_object = util_obj
+        
+
+        return {"FINISHED"}
+
+
+# ---------------------------------------------------------------------------
+# --- Pipeline Tools ---
+# ----------------------
 class MADDHATT_OT_create_collection(Operator):
     bl_idname = "maddhatt.create_collection"
     bl_label = "You shouldn't be seeing this"
@@ -66,8 +111,8 @@ class MADDHATT_OT_create_collection(Operator):
 
     def execute(self, context):
         if self.action == "make_to_organize_coll":self.create_collection(context=context, name = "Organizer")
-        elif self.action == "make_low_coll": self.create_collection(context=context, name = "Low_Poly")
         elif self.action == "make_tools_coll": self.create_collection(context=context, name = "Tools")
+        elif self.action == "make_low_coll": self.create_collection(context=context, name = "Low_Poly")
         elif self.action == "make_mid_coll": self.create_collection(context=context, name = "Mid_Poly")
         elif self.action == "make_high_coll": self.create_collection(context=context, name = "High_Poly")
 
@@ -77,6 +122,19 @@ class MADDHATT_OT_create_collection(Operator):
     def create_collection(context, name):
         col = bpy.data.collections.new(name)
         bpy.context.scene.collection.children.link(col)
+
+class MADDHATT_OT_process_object(bpy.types.Operator):
+    bl_idname = "maddhatt.process_object"
+    bl_label = "You shouldn'y be seeing this"
+    bl_options = { "INTERNAL", "REGISTER", "UNDO_GROUPED" }
+
+    def execute(self, context):
+        MADDHATT_OT_create_collection.create_collection(context, "Tools")
+        MADDHATT_OT_create_collection.create_collection(context, "Mid_Poly")
+        bpy.ops.object.parent_clear(type="CLEAR_KEEP_TRANSFORM")
+        
+        return {"FINISHED"}
+
 
 class MADDHATT_OT_create_material(bpy.types.Operator):
     bl_idname = "maddhatt.create_material"
@@ -144,22 +202,27 @@ class MADDHATT_OT_assign_material(bpy.types.Operator):
                 bpy.ops.object.material_slot_assign()
 
         return {"FINISHED"}
-
         
 
 # ---------------------------------------------------------------------------
 # --- Class registration ---
 # --------------------------
 def register():
+    bpy.utils.register_class(MADDHATT_OT_setup_circular_array)
+
     bpy.utils.register_class(MADDHATT_OT_assign_material)
     bpy.utils.register_class(MADDHATT_OT_create_material)
     bpy.utils.register_class(MADDHATT_OT_create_collection)
+    bpy.utils.register_class(MADDHATT_OT_process_object)
     bpy.utils.register_class(VIEW3D_PT_pipeline)
 
 def unregister():
+    bpy.utils.unregister_class(MADDHATT_OT_setup_circular_array)
+
     bpy.utils.unregister_class(MADDHATT_OT_assign_material)
     bpy.utils.unregister_class(MADDHATT_OT_create_material)
     bpy.utils.unregister_class(MADDHATT_OT_create_collection)
+    bpy.utils.unregister_class(MADDHATT_OT_process_object)
     bpy.utils.unregister_class(VIEW3D_PT_pipeline)        
 
 if __name__ == "__main__":
