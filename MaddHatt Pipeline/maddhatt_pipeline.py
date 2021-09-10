@@ -38,8 +38,10 @@ class VIEW3D_PT_pipeline(bpy.types.Panel):
 
         layout.operator("maddhatt.create_material", text="Create material").mat_id = matcount
 
-        for id in range(0, matcount):
-            layout.operator("maddhatt.assign_material", text="Assign mat" + str(id)).mat_id = id
+        for mat_id in range(0, matcount):
+            mat_name = mat_id.name[start: 6]
+            
+            layout.operator("maddhatt.assign_material", text="Assign mat" + str(mat_id)).mat_id = mat_id
 
         # obj_count = len(bpy.data.collections.get("To_Organize").all_objects)
         # row = layout.row
@@ -56,14 +58,16 @@ class MADDHATT_OT_create_collection(Operator):
     action: bpy.props.EnumProperty(
         items=[
             ("make_to_organize_coll", "", ""),
+            ("make_tools_coll", "", ""),
             ("make_low_coll", "", ""),
             ("make_mid_coll", "", ""),
             ("make_high_coll", "", "")]
     )
 
     def execute(self, context):
-        if self.action == "make_to_organize_coll":self.create_collection(context=context, name = "To_Organize")
+        if self.action == "make_to_organize_coll":self.create_collection(context=context, name = "Organizer")
         elif self.action == "make_low_coll": self.create_collection(context=context, name = "Low_Poly")
+        elif self.action == "make_tools_coll": self.create_collection(context=context, name = "Tools")
         elif self.action == "make_mid_coll": self.create_collection(context=context, name = "Mid_Poly")
         elif self.action == "make_high_coll": self.create_collection(context=context, name = "High_Poly")
 
