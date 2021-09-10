@@ -129,9 +129,23 @@ class MADDHATT_OT_process_object(bpy.types.Operator):
     bl_options = { "INTERNAL", "REGISTER", "UNDO_GROUPED" }
 
     def execute(self, context):
-        MADDHATT_OT_create_collection.create_collection(context, "Tools")
-        MADDHATT_OT_create_collection.create_collection(context, "Mid_Poly")
-        bpy.ops.object.parent_clear(type="CLEAR_KEEP_TRANSFORM")
+        # Perform any neccessary setup
+        if any(col.name == "Tools" for col in bpy.data.collections) == False:
+            MADDHATT_OT_create_collection.create_collection(context, "Tools")
+        if any(col.name == "Mid_Poly" for col in bpy.data.collections) == False:
+            MADDHATT_OT_create_collection.create_collection(context, "Mid_Poly")
+
+        # Clean up objects
+        id = 0
+        for obj in bpy.data.collections["Organizer"].all_objects:
+            if obj.parent is not None:
+                obj.parent_clear(type="CLEAR_KEEP_TRANSFORM")
+            if obj.type == "EMPTY" or obj.type == "LIGHT" or obj.hide_viewport == True:
+                obj.move_to_collection("TOOLS")
+            else:
+                obj.move_to_collection("MIDPOLY")
+                id += 1
+
         
         return {"FINISHED"}
 
