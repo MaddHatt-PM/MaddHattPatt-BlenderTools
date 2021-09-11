@@ -32,15 +32,15 @@ class VIEW3D_PT_pipeline(bpy.types.Panel):
 
         layout.separator()
         layout.label(text="Pipeline Managers")
-        # Check if MidPoly collection exist
+
         if any(col.name == "Organizer" for col in bpy.data.collections) == False:
             layout.operator("maddhatt.create_collection", text="Add Organizer Collection").action = "make_to_organize_coll"
 
-            # return {"FINSIHED"}
-        else:
-            layout.label(text="To_Organize collection exists")
+        elif len(bpy.data.collections["Organizer"].objects) != 0:
+            layout.operator("maddhatt.process_object", text="Process Organization")
 
-        layout.operator("maddhatt.process_object", text="Process Object")
+        else:
+            layout.label(text="Nothing to do")
 
         matcount = len(bpy.data.materials)
 
@@ -151,28 +151,10 @@ class MADDHATT_OT_process_object(bpy.types.Operator):
         bpy.ops.object.select_same_collection(collection="Tools")
         bpy.ops.object.parent_clear(type="CLEAR_KEEP_TRANSFORM")
 
-        # Gross way to exclude a collection
-        # Thanks to https://blender.stackexchange.com/questions/127403/change-active-collection
-        layer_coll = bpy.context.view_layer.layer_collection
-        layerColl = find_layer_collection(layer_coll, "Tools")
-        old = bpy.context.view_layer.active_layer_collection
-        bpy.context.view_layer.active_layer_collection = layerColl
-        bpy.context.view_layer.active_layer_collection.exclude = True
-
         bpy.ops.object.select_same_collection(collection="Mid_Poly")
         bpy.ops.object.parent_clear(type="CLEAR_KEEP_TRANSFORM")
 
         return {"FINISHED"}
-
-def find_layer_collection(layer_coll, coll_name):
-    found = None
-    if (layer_coll.name == coll_name):
-        return layer_coll
-    for layer in layer_coll.children:
-        found = find_layer_collection(layer, coll_name)
-        if found:
-            return found
-
 
 class MADDHATT_OT_create_material(bpy.types.Operator):
     bl_idname = "maddhatt.create_material"
