@@ -29,32 +29,35 @@ class VIEW3D_PT_pipeline(bpy.types.Panel):
         layout = self.layout
         
         layout.label(text="Workflow Helpers")
-        layout.operator("maddhatt.setup_circular_array", text="Create circular array")
+        layout.operator("maddhatt.setup_circular_array", text="Create circular array", icon="FORCE_LENNARDJONES")
 
         layout.separator()
         layout.label(text="Pipeline Managers")
+        col = layout.column(heading="Pipeline Managers", align=True, )
 
         if any(col.name == "Organizer" for col in bpy.data.collections) == False:
-            layout.operator("maddhatt.create_collection", text="Add Organizer Collection").action = "make_to_organize_coll"
+            col.operator("maddhatt.create_collection", text="Add Organizer Collection", icon="COLLECTION_NEW").action = "make_to_organize_coll"
 
         else:
-            layout.operator("maddhatt.process_organization", text="Process Organization")
+            col.operator("maddhatt.process_organization", text="Process Organization")
+            col.operator("maddhatt.create_low_poly", text="Setup Low Poly", icon="COLLECTION_NEW")
+            col.operator("maddhatt.create_low_poly", text="Setup High Poly", icon="COLLECTION_NEW")
 
-        layout.operator("maddhatt.create_low_poly", text="Create Low Poly")
+        layout.separator()
 
-        matcount = len(bpy.data.materials)
-
-        layout.operator("maddhatt.create_material", text="Create material").mat_id = matcount
-
-        layout.label(text="Material IDs")
-        for mat_id in range(0, matcount):
-            # mat_name = mat_id.name[6:]
+        col = layout.column(heading="Color ID Painting", align=True)
+        col.operator("maddhatt.create_material", text="Create ID Material").mat_id = len(bpy.data.materials)
+        for mat_id in range(0, len(bpy.data.materials)):
+            
+            # If it has a custom name, cut off the prefix
             mat_name = bpy.data.materials[mat_id].name
-            layout.operator("maddhatt.assign_material", text="Assign " + mat_name).mat_id = mat_id
+            if len(mat_name) != 5:
+                mat_name = mat_name[5:]
 
-        # obj_count = len(bpy.data.collections.get("To_Organize").all_objects)
-        # row = layout.row
-        # row = layout.label(text=str(obj_count))
+            row = col.row(align=True)
+            row.operator("maddhatt.assign_material", text=mat_name, icon="MATERIAL").mat_id = mat_id
+            row.operator("maddhatt.rename_id_material", text="", icon="SMALL_CAPS").mat_target = mat_name
+
 
 # ---------------------------------------------------------------------------
 # --- Workflow Tools ---
@@ -127,6 +130,10 @@ class MADDHATT_OT_create_low_poly(bpy.types.Operator):
     bl_label = "you shouldn't see this"
     bl_options = { "INTERNAL", "REGISTER", "UNDO_GROUPED" }
 
+    @classmethod
+    def poll(cls, context):
+        return len(bpy.data.collections.get("Mid_Poly").objects) != 0
+
     def execute(self, context):
         MADDHATT_OT_create_collection.create_collection(context, "Low_Poly")
         bpy.data.collections["Mid_Poly"].objects[0].name.replace(".001", "_low")
@@ -143,7 +150,7 @@ class MADDHATT_OT_process_organization(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return len(bpy.data.collections.get("Organizer").objects) is not 0
+        return len(bpy.data.collections.get("Organizer").objects) != 0
 
     def execute(self, context):
         # Perform any neccessary setup
@@ -182,7 +189,7 @@ class MADDHATT_OT_create_material(bpy.types.Operator):
     mat_id: bpy.props.IntProperty(name="mat_id")
 
     def execute(self, context):
-        mat = bpy.data.materials.new("ID_" + str(self.mat_id).zfill(2))
+        mat = bpy.data.materials.new("ID" + str(self.mat_id).zfill(2) + "_")
 
         id = float(self.mat_id)
 
@@ -191,7 +198,6 @@ class MADDHATT_OT_create_material(bpy.types.Operator):
         v = 1 - (id // 3 * 0.045)
         difcolor = colorsys.hsv_to_rgb(h,s,v)
         mat.diffuse_color = (difcolor[0], difcolor[1], difcolor[2], 1.0) 
-        print (h, s, v)
 
         return {"FINISHED"}
         
@@ -241,7 +247,20 @@ class MADDHATT_OT_assign_material(bpy.types.Operator):
 
         return {"FINISHED"}
         
+class MADDHATT_OT_rename_id_material(bpy.types.Operator):
+    bl_idname = "maddhatt.rename_id_material"
+    bl_label = "Rename id material"
 
+    mat_target:bpy.props.StringProperty(options={"HIDDEN"})
+    mat_rename: bpy.props.StringProperty(name="ID Material Name: ")
+    
+
+    def execute(self, context):
+        bpy.data.materials[self.mat_target].name = self.mat_target[:5] + self.mat_rename
+        return {"FINISHED"}
+
+    def invoke(self, context, event):
+        return context.window_manager.invoke_props_dialog(self)
 # ---------------------------------------------------------------------------
 # --- Class registration ---
 # --------------------------
@@ -253,6 +272,7 @@ classes = [
     MADDHATT_OT_setup_circular_array,
     MADDHATT_OT_assign_material,
     MADDHATT_OT_create_material,
+    MADDHATT_OT_rename_id_material,
     MADDHATT_OT_create_collection,
     MADDHATT_OT_create_low_poly,
     MADDHATT_OT_process_organization,
