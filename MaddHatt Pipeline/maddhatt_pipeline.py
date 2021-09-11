@@ -12,6 +12,7 @@ import bpy
 import random
 import colorsys
 import math
+import importlib
 from bpy.props import IntProperty, StringProperty
 from bpy.types import EnumProperty, LayerCollection, Operator
 
@@ -37,8 +38,7 @@ class VIEW3D_PT_pipeline(bpy.types.Panel):
             layout.operator("maddhatt.create_collection", text="Add Organizer Collection").action = "make_to_organize_coll"
 
         else:
-            layout.operator("maddhatt.process_object", text="Process Organization")
-
+            layout.operator("maddhatt.process_organization", text="Process Organization")
 
         layout.operator("maddhatt.create_low_poly", text="Create Low Poly")
 
@@ -136,8 +136,8 @@ class MADDHATT_OT_create_low_poly(bpy.types.Operator):
             bpy.data.collections["Mid_Poly"].objects.unlink(item)
             
 
-class MADDHATT_OT_process_object(bpy.types.Operator):
-    bl_idname = "maddhatt.process_object"
+class MADDHATT_OT_process_organization(bpy.types.Operator):
+    bl_idname = "maddhatt.process_organization"
     bl_label = "You shouldn'y be seeing this"
     bl_options = { "INTERNAL", "REGISTER", "UNDO_GROUPED" }
 
@@ -245,25 +245,32 @@ class MADDHATT_OT_assign_material(bpy.types.Operator):
 # ---------------------------------------------------------------------------
 # --- Class registration ---
 # --------------------------
-def register():
-    bpy.utils.register_class(MADDHATT_OT_setup_circular_array)
+modules = [
 
-    bpy.utils.register_class(MADDHATT_OT_assign_material)
-    bpy.utils.register_class(MADDHATT_OT_create_material)
-    bpy.utils.register_class(MADDHATT_OT_create_collection)
-    bpy.utils.register_class(MADDHATT_OT_create_low_poly)
-    bpy.utils.register_class(MADDHATT_OT_process_object)
-    bpy.utils.register_class(VIEW3D_PT_pipeline)
+]
+
+classes = [
+    MADDHATT_OT_setup_circular_array,
+    MADDHATT_OT_assign_material,
+    MADDHATT_OT_create_material,
+    MADDHATT_OT_create_collection,
+    MADDHATT_OT_create_low_poly,
+    MADDHATT_OT_process_organization,
+    VIEW3D_PT_pipeline,
+]
+
+def register():
+    for mod in modules:
+        importlib.reload(mod)
+
+    for cls in classes:
+        bpy.utils.register_class(cls)
+
 
 def unregister():
-    bpy.utils.unregister_class(MADDHATT_OT_setup_circular_array)
-
-    bpy.utils.unregister_class(MADDHATT_OT_assign_material)
-    bpy.utils.unregister_class(MADDHATT_OT_create_material)
-    bpy.utils.unregister_class(MADDHATT_OT_create_collection)
-    bpy.utils.unregister_class(MADDHATT_OT_create_low_poly)
-    bpy.utils.unregister_class(MADDHATT_OT_process_object)
-    bpy.utils.unregister_class(VIEW3D_PT_pipeline)        
+    for cls in reversed(classes):
+        bpy.utils.unregister_class(cls)
+    
 
 if __name__ == "__main__":
     register()
