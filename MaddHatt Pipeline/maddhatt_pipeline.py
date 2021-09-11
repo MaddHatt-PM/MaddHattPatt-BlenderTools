@@ -137,16 +137,22 @@ class MADDHATT_OT_process_object(bpy.types.Operator):
 
         # Clean up objects
         id = 0
-        for obj in bpy.data.collections["Organizer"].all_objects:
-            if obj.parent is not None:
-                obj.parent_clear(type="CLEAR_KEEP_TRANSFORM")
-            if obj.type == "EMPTY" or obj.type == "LIGHT" or obj.hide_viewport == True:
-                obj.move_to_collection("TOOLS")
-            else:
-                obj.move_to_collection("MIDPOLY")
-                id += 1
-
+        bpy.ops.object.select_same_collection(collection="Organizer")
+        bpy.ops.object.parent_clear(type="CLEAR_KEEP_TRANSFORM")
         
+
+        for obj in bpy.context.selected_objects:
+            bpy.data.collections["Organizer"].objects.unlink(obj)
+
+            if obj.type == "EMPTY" or obj.type == "LIGHT" or obj.hide_viewport == True:
+                bpy.data.collections["Tools"].objects.link(obj)
+            else:
+                bpy.data.collections["Mid_Poly"].objects.link(obj)
+                obj.name = "part_" + str(id).zfill(2)
+                id += 1
+        
+        # bpy.data.collections["Organizer"].objects
+
         return {"FINISHED"}
 
 
