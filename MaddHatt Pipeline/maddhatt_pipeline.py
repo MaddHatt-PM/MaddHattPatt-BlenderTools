@@ -36,11 +36,11 @@ class VIEW3D_PT_pipeline(bpy.types.Panel):
         if any(col.name == "Organizer" for col in bpy.data.collections) == False:
             layout.operator("maddhatt.create_collection", text="Add Organizer Collection").action = "make_to_organize_coll"
 
-        elif len(bpy.data.collections["Organizer"].objects) != 0:
+        else:
             layout.operator("maddhatt.process_object", text="Process Organization")
 
-        else:
-            layout.label(text="Nothing to do")
+
+        layout.operator("maddhatt.create_low_poly", text="Create Low Poly")
 
         matcount = len(bpy.data.materials)
 
@@ -67,9 +67,9 @@ class MADDHATT_OT_setup_circular_array(bpy.types.Operator):
     copy_count: IntProperty(name="Copy Count", default=3, min=2, soft_max=18)
     axis_id: IntProperty(name="Axis ID", default=2, min=0, max=2)
 
-    # @classmethod
-    # def poll(cls, context):
-    #     return context.active_object != NoneType
+    @classmethod
+    def poll(cls, context):
+        return context.active_object != None
 
     def execute(self, context):
         # Object offset setup
@@ -122,10 +122,28 @@ class MADDHATT_OT_create_collection(Operator):
         col = bpy.data.collections.new(name)
         bpy.context.scene.collection.children.link(col)
 
+class MADDHATT_OT_create_low_poly(bpy.types.Operator):
+    bl_idname = "maddhatt.create_low_poly"
+    bl_label = "you shouldn't see this"
+    bl_options = { "INTERNAL", "REGISTER", "UNDO_GROUPED" }
+
+    def execute(self, context):
+        MADDHATT_OT_create_collection.create_collection(context, "Low_Poly")
+        bpy.data.collections["Mid_Poly"].objects[0].name.replace(".001", "_low")
+        for item in bpy.data.collections["Mid_Poly"].objects:
+            item.name = item.name.replace(".001", "_low")
+            bpy.data.collections["Mid_Poly"].objects.unlink(item)
+            bpy.data.collections["Mid_Poly"].objects.unlink(item)
+            
+
 class MADDHATT_OT_process_object(bpy.types.Operator):
     bl_idname = "maddhatt.process_object"
     bl_label = "You shouldn'y be seeing this"
     bl_options = { "INTERNAL", "REGISTER", "UNDO_GROUPED" }
+
+    @classmethod
+    def poll(cls, context):
+        return len(bpy.data.collections.get("Organizer").objects) is not 0
 
     def execute(self, context):
         # Perform any neccessary setup
@@ -145,7 +163,7 @@ class MADDHATT_OT_process_object(bpy.types.Operator):
                 bpy.data.collections["Tools"].objects.link(obj)
             else:
                 bpy.data.collections["Mid_Poly"].objects.link(obj)
-                obj.name = "part_" + str(id).zfill(2)
+                obj.name = "part_" + str(id).zfill(3)
                 id += 1
         
         bpy.ops.object.select_same_collection(collection="Tools")
@@ -233,6 +251,7 @@ def register():
     bpy.utils.register_class(MADDHATT_OT_assign_material)
     bpy.utils.register_class(MADDHATT_OT_create_material)
     bpy.utils.register_class(MADDHATT_OT_create_collection)
+    bpy.utils.register_class(MADDHATT_OT_create_low_poly)
     bpy.utils.register_class(MADDHATT_OT_process_object)
     bpy.utils.register_class(VIEW3D_PT_pipeline)
 
@@ -242,6 +261,7 @@ def unregister():
     bpy.utils.unregister_class(MADDHATT_OT_assign_material)
     bpy.utils.unregister_class(MADDHATT_OT_create_material)
     bpy.utils.unregister_class(MADDHATT_OT_create_collection)
+    bpy.utils.unregister_class(MADDHATT_OT_create_low_poly)
     bpy.utils.unregister_class(MADDHATT_OT_process_object)
     bpy.utils.unregister_class(VIEW3D_PT_pipeline)        
 
