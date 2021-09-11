@@ -16,14 +16,14 @@ A collection of tools to help my personal workflow. Also includes files to sync 
         - Give the user a list of mats with prefix 'ID_' and an option to create a new mat with a randomized color. For randomized colors, reference a premade tuple of colors
         - When in edit mesh mode with face mode on, non added materials should be greyed out. When clicked the add to the mesh's material list and then are no longer greyed out.
     - [ ] Mid Poly Setup
-        - [ ] 1. Create backup save
+        - [x] 1. Create backup save (Not needed)
         - [x] 2. Target a specific collection
-        - [ ] 3. Unparent all objects with transformation so they're on the same level
+        - [x] 3. Unparent all objects with transformation so they're on the same level
         - [x] 4. Create _TOOLS collections
-        - [ ] 5. Move all hidden objects to _TOOLS
-        - [ ] 6. Everything else gets moved to Mid_Poly collection (create if not already made) 
-        - [ ] 7. Rename everything in Mid_Poly (Optional) to ie: Part05
-            - [ ] Naming convention should be vague and general and not something   someone would actually use for the final product 
+        - [x] 5. Move all hidden objects to _TOOLS
+        - [x] 6. Everything else gets moved to Mid_Poly collection (create if not already made) 
+        - [x] 7. Rename everything in Mid_Poly (Optional) to ie: Part05
+            - [x] Naming convention should be vague and general and not something   someone would actually use for the final product 
         - [ ] 8. Duplicate: Mid_Poly and rename to Low_Poly. Rename all new objects with a _low suffix
         - [ ] 9. Give the low poly meshes a material name of mat_finalname
         - [ ] 10. Duplicate: Mid_Poly and rename to High_Poly. Rename all new objects with a _high suffix

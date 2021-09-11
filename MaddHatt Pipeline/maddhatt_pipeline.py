@@ -13,7 +13,7 @@ import random
 import colorsys
 import math
 from bpy.props import IntProperty, StringProperty
-from bpy.types import EnumProperty, Operator
+from bpy.types import EnumProperty, LayerCollection, Operator
 
 # ---------------------------------------------------------------------------
 # --- UI Panels ---
@@ -87,7 +87,6 @@ class MADDHATT_OT_setup_circular_array(bpy.types.Operator):
         array_mod.use_relative_offset = False
         array_mod.use_object_offset = True
         array_mod.offset_object = util_obj
-        
 
         return {"FINISHED"}
 
@@ -136,24 +135,43 @@ class MADDHATT_OT_process_object(bpy.types.Operator):
             MADDHATT_OT_create_collection.create_collection(context, "Mid_Poly")
 
         # Clean up objects
-        id = 0
-        bpy.ops.object.select_same_collection(collection="Organizer")
-        bpy.ops.object.parent_clear(type="CLEAR_KEEP_TRANSFORM")
+        id = len(bpy.data.collections["Mid_Poly"].objects)
         
-
-        for obj in bpy.context.selected_objects:
+        for obj in bpy.data.collections["Organizer"].objects:
             bpy.data.collections["Organizer"].objects.unlink(obj)
 
             if obj.type == "EMPTY" or obj.type == "LIGHT" or obj.hide_viewport == True:
+                obj.hide_viewport = False
                 bpy.data.collections["Tools"].objects.link(obj)
             else:
                 bpy.data.collections["Mid_Poly"].objects.link(obj)
                 obj.name = "part_" + str(id).zfill(2)
                 id += 1
         
-        # bpy.data.collections["Organizer"].objects
+        bpy.ops.object.select_same_collection(collection="Tools")
+        bpy.ops.object.parent_clear(type="CLEAR_KEEP_TRANSFORM")
+
+        # Gross way to exclude a collection
+        # Thanks to https://blender.stackexchange.com/questions/127403/change-active-collection
+        layer_coll = bpy.context.view_layer.layer_collection
+        layerColl = find_layer_collection(layer_coll, "Tools")
+        old = bpy.context.view_layer.active_layer_collection
+        bpy.context.view_layer.active_layer_collection = layerColl
+        bpy.context.view_layer.active_layer_collection.exclude = True
+
+        bpy.ops.object.select_same_collection(collection="Mid_Poly")
+        bpy.ops.object.parent_clear(type="CLEAR_KEEP_TRANSFORM")
 
         return {"FINISHED"}
+
+def find_layer_collection(layer_coll, coll_name):
+    found = None
+    if (layer_coll.name == coll_name):
+        return layer_coll
+    for layer in layer_coll.children:
+        found = find_layer_collection(layer, coll_name)
+        if found:
+            return found
 
 
 class MADDHATT_OT_create_material(bpy.types.Operator):
