@@ -23,18 +23,19 @@ class VIEW3D_PT_pipeline(bpy.types.Panel):
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
     bl_category = "Pipeline Tools"
-    bl_label = "Pipeline tools"
+    bl_label = "MaddHattPatt's Toolbox"
 
     def draw(self, context):
         layout = self.layout
         
-        layout.label(text="Workflow Helpers")
-        layout.operator("maddhatt.setup_circular_array", text="Create circular array", icon="FORCE_LENNARDJONES")
+        col = layout.column(align=True)
+        col.label(text="Workflow Helpers")
+        col.operator("maddhatt.setup_circular_array", text="Create circular array", icon="FORCE_LENNARDJONES")
 
         layout.separator()
-        layout.label(text="Pipeline Managers")
-        col = layout.column(heading="Pipeline Managers", align=True, )
 
+        col = layout.column(align=True)
+        col.label(text="Pipeline Managers")
         if any(col.name == "Organizer" for col in bpy.data.collections) == False:
             col.operator("maddhatt.create_collection", text="Add Organizer Collection", icon="COLLECTION_NEW").action = "make_to_organize_coll"
 
@@ -46,17 +47,19 @@ class VIEW3D_PT_pipeline(bpy.types.Panel):
         layout.separator()
 
         col = layout.column(heading="Color ID Painting", align=True)
-        col.operator("maddhatt.create_material", text="Create ID Material").mat_id = len(bpy.data.materials)
+        col.operator("maddhatt.create_material", text="Create ID Material", icon="MATERIAL").mat_id = len(bpy.data.materials)
         for mat_id in range(0, len(bpy.data.materials)):
             
-            # If it has a custom name, cut off the prefix
-            mat_name = bpy.data.materials[mat_id].name
-            if len(mat_name) != 5:
-                mat_name = mat_name[5:]
+            # Process the material's name for readibility
+            mat_target = bpy.data.materials[mat_id].name
+            if len(mat_target) != 5:
+                mat_name = mat_target[5:]
+            else:
+                mat_name = "ID Mat - " + str(int(mat_target[2:4]))
 
             row = col.row(align=True)
-            row.operator("maddhatt.assign_material", text=mat_name, icon="MATERIAL").mat_id = mat_id
-            row.operator("maddhatt.rename_id_material", text="", icon="SMALL_CAPS").mat_target = mat_name
+            row.operator("maddhatt.assign_material", text=mat_name).mat_id = mat_id
+            row.operator("maddhatt.rename_id_material", text="", icon="RIGHTARROW_THIN").mat_target = mat_target
 
 
 # ---------------------------------------------------------------------------
