@@ -8,13 +8,15 @@ bl_info = {
     "category": "3D View"
     }
 
-modulesNames = ["addCubePanel", "addCube"]
+# REPLACE
+moduleNames = ["addCubePanel", "addCube", "get rid of this"]
+# REPLACE
 
 import sys
 import importlib
  
 modulesFullNames = {}
-for currentModuleName in modulesNames:
+for currentModuleName in moduleNames:
     modulesFullNames[currentModuleName] = ('{}.{}'.format(__name__, currentModuleName))
  
 for currentModuleFullName in modulesFullNames.values():
