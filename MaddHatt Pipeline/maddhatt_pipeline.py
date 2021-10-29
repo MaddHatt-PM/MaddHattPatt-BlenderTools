@@ -49,17 +49,17 @@ class VIEW3D_PT_pipeline(bpy.types.Panel):
         col = layout.column(heading="Color ID Painting", align=True)
         col.operator("maddhatt.create_material", text="Create ID Material", icon="MATERIAL").mat_id = len(bpy.data.materials)
         for mat_id in range(0, len(bpy.data.materials)):
-            
-            # Process the material's name for readibility
             mat_target = bpy.data.materials[mat_id].name
-            if len(mat_target) != 5:
-                mat_name = mat_target[5:]
-            else:
-                mat_name = "ID Mat - " + str(int(mat_target[2:4]))
+            if mat_target.startswith("ID"):
+                # Process the material's name for readibility
+                if len(mat_target) != 5:
+                    mat_name = mat_target[5:]
+                else:
+                    mat_name = "ID Mat - " + str(int(mat_target[2:4]))
 
-            row = col.row(align=True)
-            row.operator("maddhatt.assign_material", text=mat_name).mat_id = mat_id
-            row.operator("maddhatt.rename_id_material", text="", icon="RIGHTARROW_THIN").mat_target = mat_target
+                row = col.row(align=True)
+                row.operator("maddhatt.assign_material", text=mat_name).mat_id = mat_target
+                row.operator("maddhatt.rename_id_material", text="", icon="RIGHTARROW_THIN").mat_target = mat_target
 
 
 # ---------------------------------------------------------------------------
@@ -78,8 +78,9 @@ class MADDHATT_OT_setup_circular_array(bpy.types.Operator):
         return context.active_object != None
 
     def execute(self, context):
-        # Object offset setup
         util_obj = bpy.data.objects.new(bpy.context.object.name + "_CircularUtil" , None)
+        
+        # Object offset setup
         bpy.context.scene.collection.objects.link(util_obj)
         util_obj.parent = bpy.context.object
         rot_amount = 360.0 / float(self.copy_count)
@@ -209,7 +210,7 @@ class MADDHATT_OT_assign_material(bpy.types.Operator):
     bl_label = "You shouldn't be seeing this"
     bl_options = { "INTERNAL", "REGISTER", "UNDO"}
 
-    mat_id: bpy.props.IntProperty(name="mat_id")
+    mat_id: bpy.props.StringProperty(name="mat_id")
 
     @classmethod
     def poll(cls, context):
@@ -217,9 +218,11 @@ class MADDHATT_OT_assign_material(bpy.types.Operator):
         return obj is not None and obj.type == "MESH"
 
     def execute(self, context):
-        i = "ID_" + str(self.mat_id).zfill(2)
+        i = self.mat_id
+        print(i)
         for item in bpy.data.materials.keys():
             if (item.startswith(i)):
+                print (item, i)
                 i = item
 
         mat = bpy.data.materials.get(i)
