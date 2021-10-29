@@ -218,7 +218,7 @@ class MADDHATT_OT_assign_material(bpy.types.Operator):
         return obj is not None and obj.type == "MESH"
 
     def execute(self, context):
-        i = self.mat_id
+        i = self.mat
         print(i)
         for item in bpy.data.materials.keys():
             if (item.startswith(i)):
