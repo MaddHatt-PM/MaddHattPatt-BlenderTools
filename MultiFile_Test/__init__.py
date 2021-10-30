@@ -9,7 +9,7 @@ bl_info = {
     }
 
 # REPLACE
-moduleNames = ["addCubePanel", "addCube", "get rid of this"]
+moduleNames = ["addCubePanel", "addCube"]
 # REPLACE
 
 import sys

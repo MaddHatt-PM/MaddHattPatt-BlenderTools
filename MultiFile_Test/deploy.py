@@ -1,20 +1,44 @@
 import os
 import zipfile
 
-def zip_directory(path, zfile):
-    for root, dirs, files in os.walk(path):
-        for file in files:
-            zfile.write(os.path.join(root, file), os.path.relpath(os.path.join(root, file),os.path.join(path, '..')))
-
-# Rewrite the __init__.py to add new classes
-
+# Get exact folder containing deploy.py 
 for root, dirs, files in os.walk(os.getcwd()):
     for file in files:
         if file == "deploy.py":
             export_directory = root
 
-zip_name = export_directory.split("\\")[-1] + '.zip'
+# Gather all modules in this project
+moduleNames = []
+for root, dirs, files in os.walk(export_directory):
+    for file in files:
+        if ".py" in file and "deploy.py" != file and "__init__.py" != file:
+            moduleNames.append(file[:-3])
+        if "__init__.py" in file:
+            loader_path = os.path.join (export_directory, file)
 
+# Rewrite __init__.py for Blender to load
+loader_file = open(loader_path, "r")
+loader_text = loader_file.readlines()
+loader_file.close()
+
+for i, line in enumerate(loader_text):
+    if "moduleNames = [" in line:
+        loader_text[i] = "moduleNames = " + str(moduleNames) + "\n"
+        break
+
+loader_file = open(loader_path, "w")
+for line in loader_text:
+    loader_file.write(line)
+    print(line)
+loader_file.close()
+
+# Zip up addon 
+zip_name = export_directory.split("\\")[-1] + '.zip'
 zfile = zipfile.ZipFile(zip_name, 'w', zipfile.ZIP_DEFLATED)
-zip_directory(export_directory, zfile)
+
+for root, dirs, files in os.walk(export_directory):
+        for file in files:
+            zfile.write(os.path.join(root, file), os.path.relpath(os.path.join(root, file),os.path.join(export_directory, '..')))
 zfile.close()
+
+# TODO: Can external python scripts force reload blender script?
