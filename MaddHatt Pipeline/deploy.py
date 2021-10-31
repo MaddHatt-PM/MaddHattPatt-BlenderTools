@@ -9,10 +9,13 @@ for root, dirs, files in os.walk(os.getcwd()):
 
 # Gather all modules in this project
 moduleNames = []
+dir_cutoff_len = len(export_directory) + 1
+
 for root, dirs, files in os.walk(export_directory):
     for file in files:
         if ".py" in file and "deploy.py" != file and "__init__.py" != file:
-            moduleNames.append(file[:-3])
+            mod_file = os.path.join(root[dir_cutoff_len:], file).replace(os.sep, ".")
+            moduleNames.append(mod_file[:-3])
         if "__init__.py" in file:
             loader_path = os.path.join (export_directory, file)
 
@@ -29,7 +32,6 @@ for i, line in enumerate(loader_text):
 loader_file = open(loader_path, "w")
 for line in loader_text:
     loader_file.write(line)
-    print(line)
 loader_file.close()
 
 # Zip up addon 

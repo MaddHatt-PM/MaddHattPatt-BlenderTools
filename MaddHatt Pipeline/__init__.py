@@ -8,9 +8,7 @@ bl_info = {
     "category": "3D View"
     }
 
-# REPLACE
-moduleNames = ["addCubePanel", "addCube"]
-# REPLACE
+moduleNames = ['main_ui', 'Organizers.create_collections', 'Organizers.process_organization', 'Tools.circular_arrays', 'Tools.material_id_painter']
 
 import sys
 import importlib
