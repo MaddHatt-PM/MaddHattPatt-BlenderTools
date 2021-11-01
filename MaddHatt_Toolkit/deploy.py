@@ -40,7 +40,8 @@ zfile = zipfile.ZipFile(zip_name, 'w', zipfile.ZIP_DEFLATED)
 
 for root, dirs, files in os.walk(export_directory):
         for file in files:
-            zfile.write(os.path.join(root, file), os.path.relpath(os.path.join(root, file),os.path.join(export_directory, '..')))
+            if "deploy.py" not in file and ".zip" not in file:
+                zfile.write(os.path.join(root, file), os.path.relpath(os.path.join(root, file),os.path.join(export_directory, '..')))
 zfile.close()
 
 # TODO: Can external python scripts force reload blender script?

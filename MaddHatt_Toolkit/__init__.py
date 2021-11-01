@@ -1,14 +1,15 @@
 bl_info = {
     "version": (0, 1),
     "blender": (2, 91, 0),
-    "name": "Testing Multiple Files",
-    "author": "Patt @MaddHattPatt <MaddHatt.pm@gmail.com>",
-    "description": "A variety of tools to help out my personal ",
+    "name": "MaddHatt's Pipeline Tool",
+    "author": "Patt @MaddHattPatt on Twitter",
+    "description": "A variety of tools to help out my personal work",
     "location": "3D View on the side bar",
     "category": "3D View"
     }
 
-moduleNames = ['main_ui', 'Organizers.create_collections', 'Organizers.process_organization', 'Tools.circular_arrays', 'Tools.material_id_painter']
+
+moduleNames = ['main_ui', 'Organizers.constants', 'Organizers.create_collections', 'Organizers.process_organization', 'Tools.circular_arrays', 'Tools.material_id_painter']
 
 import sys
 import importlib
