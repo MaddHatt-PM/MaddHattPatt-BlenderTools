@@ -9,7 +9,7 @@ bl_info = {
     }
 
 
-moduleNames = ['main_ui', 'Organizers.constants', 'Organizers.create_collections', 'Organizers.process_organization', 'Tools.circular_arrays', 'Tools.material_id_painter']
+moduleNames = ['main_ui', 'Organizers.constants', 'Organizers.create_collections', 'Organizers.prepare_for_export', 'Organizers.process_organization', 'Tools.circular_arrays', 'Tools.material_id_painter']
 
 import sys
 import importlib

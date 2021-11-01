@@ -49,6 +49,9 @@ class VIEW3D_PT_pipeline(bpy.types.Panel):
             row.operator("maddhatt.create_export_collection", text="Setup Low Poly", icon="COLLECTION_NEW").coll_name = "Low_Poly"
             row.operator("maddhatt.create_export_collection", text="Setup High Poly", icon="COLLECTION_NEW").coll_name = "High_Poly"
 
+            row.operator("maddhatt.add_final_modifiers", text="Add Final Modifiers")
+            row.operator("maddhatt.final_check", text="Final Checks")
+
         layout.separator()
 
         row = layout.column(align=True)
