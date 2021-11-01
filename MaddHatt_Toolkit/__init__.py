@@ -1,5 +1,5 @@
 bl_info = {
-    "version": (0, 1),
+    "version": (0, 2),
     "blender": (2, 91, 0),
     "name": "MaddHatt's Pipeline Tool",
     "author": "Patt @MaddHattPatt on Twitter",
