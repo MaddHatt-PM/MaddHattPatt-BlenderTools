@@ -11,7 +11,12 @@ class MADDHATT_OT_add_final_modifiers(bpy.types.Operator):
         modname_w_normals = "MHtk-WNormals"
         modname_triangulate = "MHtk-Triangulate"
 
+        # Edit normals
+        og_active_obj = bpy.context.view_layer.objects.active
+        #TODO: for edge is uv seam -> mark sharp
+
         for obj in bpy.data.collections[consts.LOWPOLY].objects:
+            bpy.ops.object.shade_smooth()
             modifier_list = obj.modifiers.keys()
             bpy.context.view_layer.objects.active = obj
 
@@ -35,6 +40,7 @@ class MADDHATT_OT_add_final_modifiers(bpy.types.Operator):
                 mod.quad_method = "FIXED"
                 mod.keep_custom_normals = True
 
+        bpy.context.view_layer.objects.active = og_active_obj
         return {"FINISHED"}
 
 
@@ -63,7 +69,6 @@ class MADDHATT_OT_final_check(bpy.types.Operator):
 
                 # Find matches to high poly
 
-                # Harden Normals
 
 
 
