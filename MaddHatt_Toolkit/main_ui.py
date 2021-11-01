@@ -37,7 +37,8 @@ class VIEW3D_PT_pipeline(bpy.types.Panel):
         row.label(text="Pipeline Managers")
         if any(col.name == "Organizer" for col in bpy.data.collections) == False:
             row.operator("maddhatt.create_organizer_collection", text="Add Organizer Collection", icon="COLLECTION_NEW")
-            self.layout(context.object, "prop", slider=True)
+            if (self.bl_context.active_object != None):
+                self.layout(context.active_object, "prop", slider=True)
 
         else:
             if len(bpy.data.collections.get("Organizer").objects) == 0:

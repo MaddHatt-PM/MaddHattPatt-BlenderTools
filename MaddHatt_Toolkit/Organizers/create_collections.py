@@ -43,10 +43,11 @@ class MADDHATT_OT_create_export_collection(bpy.types.Operator):
             col = bpy.data.collections[self.coll_name]
             
         for item in bpy.data.collections[consts.MIDPOLY].objects:
-            dup_item = item.copy()
-            dup_item.data = item.data.copy()
-            bpy.data.collections[self.coll_name].objects.link(dup_item)
-            dup_item.name = dup_item.name.replace(".001", coll_suffix) 
+            if any(item.name in obj.name for obj in col.objects) == False:
+                dup_item = item.copy()
+                dup_item.data = item.data.copy()
+                col.objects.link(dup_item)
+                dup_item.name = dup_item.name.replace(".001", coll_suffix)
         
         return {"FINISHED"}
 
