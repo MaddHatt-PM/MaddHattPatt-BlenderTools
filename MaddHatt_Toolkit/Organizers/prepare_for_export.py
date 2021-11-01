@@ -52,10 +52,14 @@ class MADDHATT_OT_final_check(bpy.types.Operator):
     def execute(self, context):
         error_printout = {}
         error_printout.setdefault("Non Meshes", [])
-        error_printout.setdefault("Unapplied Modifiers", [])
-        error_printout.setdefault("Name Mismatch", [])
+        error_printout.setdefault("Missing HiPoly Partner", [])
         error_printout.setdefault("Missing '_low'", [])
+        error_printout.setdefault("Unapplied Modifiers", [])
+        error_printout.setdefault("Missing WNormal and Triangulate", [])
 
+        modname_w_normals = "MHtk-WNormals"
+        modname_triangulate = "MHtk-Triangulate"
+        
         og_active_obj = bpy.context.view_layer.objects.active
 
         for obj in bpy.data.collections[consts.LOWPOLY].objects:
@@ -72,14 +76,21 @@ class MADDHATT_OT_final_check(bpy.types.Operator):
                     obj.hide_set(False)
 
                 # Find matches to high poly
-
-
-
-
-
-            if len(obj.modifiers) > 2:
-                error_printout["Unapplied Modifiers"].append(obj.name)
-                obj.hide_set(False)
+                high_obj_name = obj.name.replace(consts.SUF_LOW, consts.SUF_HIGH)
+                if bpy.data.collections[consts.HIGHPOLY].objects.get(high_obj_name, None) == None:
+                    error_printout["Missing HiPoly Partner"].append(obj.name)
+                    obj.hide_set(False)
+                
+                # Find modifiers length
+                if len(obj.modifiers) > 2:
+                    error_printout["Unapplied Modifiers"].append(obj.name)
+                    obj.hide_set(False)
+                else:
+                    # Check for weighted and triangulate modifiers
+                    if obj.modifiers.get(modname_w_normals, None) is None and obj.modifiers.get(modname_triangulate, None) is None:
+                        error_printout["Unapplied Modifiers"].append(obj.name)
+                        error_printout["Missing WNormal and Triangulate"].append(obj.name)
+                        obj.hide_set(False)
 
         output_text = ""
         errors_present = False
