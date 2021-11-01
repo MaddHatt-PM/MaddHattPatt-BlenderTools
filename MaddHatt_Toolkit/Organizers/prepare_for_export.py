@@ -59,13 +59,17 @@ class MADDHATT_OT_final_check(bpy.types.Operator):
         og_active_obj = bpy.context.view_layer.objects.active
 
         for obj in bpy.data.collections[consts.LOWPOLY].objects:
+            obj.hide_set(True)
+            
             if obj.type != "MESH":
-                error_printout["Non Meshes"].append("\t" + obj.name)
+                error_printout["Non Meshes"].append( obj.name)
+                obj.hide_set(False)
 
             else:
                 # Check names
-                if consts.SUF_LOW in obj.name:
-                    error_printout["Missing '_low'"].append("\t" + obj.name)
+                if consts.SUF_LOW not in obj.name:
+                    error_printout["Missing '_low'"].append(obj.name)
+                    obj.hide_set(False)
 
                 # Find matches to high poly
 
@@ -74,11 +78,26 @@ class MADDHATT_OT_final_check(bpy.types.Operator):
 
 
             if len(obj.modifiers) > 2:
-                error_printout["Unapplied Modifiers"].append("\t" + obj.name)
+                error_printout["Unapplied Modifiers"].append(obj.name)
+                obj.hide_set(False)
 
+        output_text = ""
+        errors_present = False
 
+        for key in error_printout.keys():
+            if len(error_printout[key]) != 0:
+                errors_present = True
+                output_text += key + ": "
+                output_text += str(error_printout[key]).replace('[', '').replace(']', '')
+                output_text += "\n"
 
-        print(error_printout)
+        if (errors_present):
+            self.report({"WARNING"}, "errors found, see console:\n" + output_text[:-1])
+        else:
+            self.report({"INFO"}, "No errors found, good for export!")        
+            for obj in bpy.data.collections[consts.LOWPOLY].objects:
+                obj.hide_set(False)
+
         bpy.context.view_layer.objects.active = og_active_obj
         return {"FINISHED"}
 
