@@ -3,6 +3,7 @@ from bpy.props import IntProperty
 
 from .Tools import *
 from .Organizers import *
+from .Organizers import constants as consts 
 
 # ---------------------------------------------------------------------------
 # --- UI Panels ---
@@ -18,6 +19,9 @@ class VIEW3D_PT_pipeline(bpy.types.Panel):
         
         row = layout.column(align=True)
         row.label(text="Workflow Helpers")
+
+        row.operator("maddhatt.quick_export_collection", text="Export lowpoly").coll_name = consts.LOWPOLY
+        row.operator("maddhatt.quick_export_collection", text="Export highpoly").coll_name = consts.HIGHPOLY
 
         # Circular Array Controls
         active_object = context.active_object
@@ -37,8 +41,8 @@ class VIEW3D_PT_pipeline(bpy.types.Panel):
         row.label(text="Pipeline Managers")
         if any(col.name == "Organizer" for col in bpy.data.collections) == False:
             row.operator("maddhatt.create_organizer_collection", text="Add Organizer Collection", icon="COLLECTION_NEW")
-            if (self.bl_context.active_object != None):
-                self.layout(context.active_object, "prop", slider=True)
+            # if (self.bl_context.active_object != None):
+            #     self.layout(context.active_object, "prop", slider=True)
 
         else:
             if len(bpy.data.collections.get("Organizer").objects) == 0:

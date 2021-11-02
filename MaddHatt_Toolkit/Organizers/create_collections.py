@@ -32,12 +32,15 @@ class MADDHATT_OT_create_export_collection(bpy.types.Operator):
     def execute(self, context):
         if self.coll_name == consts.LOWPOLY:
             coll_suffix = "_low"
+            coll_color = "COLOR_04"
         elif self.coll_name == consts.HIGHPOLY:
             coll_suffix = "_high"
+            coll_color = "COLOR_05"
 
         # Get or create the needed collection
         if (self.coll_name not in bpy.data.collections):
             col = bpy.data.collections.new(self.coll_name)
+            col.color_tag = coll_color
             bpy.context.scene.collection.children.link(col)
         else:
             col = bpy.data.collections[self.coll_name]

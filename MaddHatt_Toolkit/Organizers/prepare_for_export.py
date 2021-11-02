@@ -105,7 +105,7 @@ class MADDHATT_OT_final_check(bpy.types.Operator):
         if (errors_present):
             self.report({"WARNING"}, "Issues found, see 'Info' panel for breakdown\n" + output_text[:-1])
         else:
-            self.report({"INFO"}, "No issues found, good for export!")        
+            self.report({"INFO"}, "No issues found, good for export!")
             for obj in bpy.data.collections[consts.LOWPOLY].objects:
                 obj.hide_set(False)
 

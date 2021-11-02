@@ -46,6 +46,12 @@ class MADDHATT_OT_process_organization(bpy.types.Operator):
         bpy.ops.object.select_same_collection(collection=consts.MIDPOLY)
         bpy.ops.object.parent_clear(type="CLEAR_KEEP_TRANSFORM")
 
+        # Clean up outliner
+        bpy.context.view_layer.layer_collection.children[consts.ORGANIZER].exclude = True
+        bpy.context.view_layer.layer_collection.children[consts.TOOLS].exclude = True
+
+
+
         return {"FINISHED"}
 
 classes = [
