@@ -80,6 +80,7 @@ class MADDHATT_OT_quick_export_collection(bpy.types.Operator):
             # bake_anim_simplify_factor: float = 1,
             )
 
+        self.report({"INFO"}, "Exported " + self.coll_name + " successfully")
         return {"FINISHED"}
 
 classes = [
