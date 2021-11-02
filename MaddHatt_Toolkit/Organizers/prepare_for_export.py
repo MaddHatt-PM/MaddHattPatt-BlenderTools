@@ -1,4 +1,6 @@
+from bmesh.types import BMesh
 import bpy
+import bmesh
 from bpy.types import Object
 from . import constants as consts
 
@@ -19,6 +21,15 @@ class MADDHATT_OT_add_final_modifiers(bpy.types.Operator):
             bpy.ops.object.shade_smooth()
             modifier_list = obj.modifiers.keys()
             bpy.context.view_layer.objects.active = obj
+
+            # Sharpen edges
+            bpy.ops.object.mode_set(mode='EDIT')
+            meshdata = bmesh.from_edit_mesh(obj.data)
+
+            for edge in meshdata.edges:
+                edge.smooth = edge.seam
+                
+            bpy.ops.object.mode_set(mode='OBJECT')
 
             # Set up for Weighted Normals (if the mesh needs it)
             if any(modname_w_normals in mod_key for mod_key in modifier_list) == False:
