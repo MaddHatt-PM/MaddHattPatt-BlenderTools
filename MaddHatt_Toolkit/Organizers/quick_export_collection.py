@@ -11,25 +11,22 @@ class MADDHATT_OT_quick_export_collection(bpy.types.Operator):
     coll_name: bpy.props.StringProperty(name="target_coll")
 
     def execute(self, context):
-        filepath = bpy.path.abspath("//") + bpy.path.basename(bpy.data.filepath).replace(".blend", "")
-        bpy.context.view_layer.layer_collection.children[consts.LOWPOLY].exclude = False
-        print(bpy.context.view_layer.layer_collection)
+        target_coll = bpy.context.view_layer.layer_collection.children[self.coll_name]
+        
+        target_coll_exclude_prev = target_coll.exclude
+        active_layer_coll_prev = bpy.context.view_layer.active_layer_collection
 
-        if self.coll_name == consts.LOWPOLY:
-            filepath += consts.SUF_LOW
-            target_coll = bpy.context.view_layer.layer_collection.children[consts.LOWPOLY]
-            bpy.context.view_layer.active_layer_collection = target_coll
-            if (bpy.context.view_layer.active_layer_collection.name != consts.LOWPOLY):
-                self.report({"ERROR"}, "Turn on the collection")  
-                return {"CANCELLED"}
+        suffix = consts.coll_to_suffix(self.coll_name)
+        if suffix is None:
+            self.report({"ERROR"}, "Only LOWPOLY and HIGHPOLY are valid collections to export")
+            return {"CANCELLED"}
 
-        elif self.coll_name == consts.HIGHPOLY:
-            filepath += consts.SUF_HIGH
-            target_coll = bpy.context.view_layer.layer_collection.children[consts.HIGHPOLY]
-            bpy.context.view_layer.active_layer_collection = target_coll
-
-
-        filepath += ".fbx"
+        filepath = bpy.path.abspath("//") 
+        filepath += bpy.path.basename(bpy.data.filepath).replace(".blend", "")
+        filepath += suffix + ".fbx"
+        target_coll.exclude = False
+        bpy.context.view_layer.active_layer_collection = target_coll
+        
 
         bpy.ops.export_scene.fbx(
             # --- Export ---------------------------------
@@ -79,6 +76,10 @@ class MADDHATT_OT_quick_export_collection(bpy.types.Operator):
             # bake_anim_step: float = 1, 
             # bake_anim_simplify_factor: float = 1,
             )
+
+        # Return to original state
+        target_coll.exclude = target_coll_exclude_prev
+        bpy.context.view_layer.active_layer_collection = active_layer_coll_prev
 
         self.report({"INFO"}, "Exported " + self.coll_name + " successfully")
         return {"FINISHED"}
