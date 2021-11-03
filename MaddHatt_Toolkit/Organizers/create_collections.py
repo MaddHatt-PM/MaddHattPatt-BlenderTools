@@ -55,6 +55,15 @@ class MADDHATT_OT_create_export_collection(bpy.types.Operator):
                 dup_item.data = item.data.copy()
                 col.objects.link(dup_item)
                 dup_item.name = dup_item.name.replace(".001", coll_suffix)
+
+        # For the low poly collection, apply an export material
+        if self.coll_name == consts.LOWPOLY:
+            mat_name = bpy.path.basename(bpy.data.filepath).replace(".blend", "") + "_mat"
+            export_mat = bpy.data.materials.get(mat_name, bpy.data.materials.new(mat_name))
+            for item in bpy.data.collections[consts.LOWPOLY].objects:
+                item.data.materials.clear()
+                item.data.materials.append(export_mat)
+
         
         return {"FINISHED"}
 
