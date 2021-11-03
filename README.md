@@ -24,9 +24,9 @@ A collection of tools to help my personal workflow. Also includes files to sync 
         - [x] 6. Everything else gets moved to Mid_Poly collection (create if not already made) 
         - [x] 7. Rename everything in Mid_Poly (Optional) to ie: Part05
             - [x] Naming convention should be vague and general and not something   someone would actually use for the final product 
-        - [ ] 8. Duplicate: Mid_Poly and rename to Low_Poly. Rename all new objects with a _low suffix
+        - [X] 8. Duplicate: Mid_Poly and rename to Low_Poly. Rename all new objects with a _low suffix
         - [ ] 9. Give the low poly meshes a material name of mat_finalname
-        - [ ] 10. Duplicate: Mid_Poly and rename to High_Poly. Rename all new objects with a _high suffix
+        - [X] 10. Duplicate: Mid_Poly and rename to High_Poly. Rename all new objects with a _high suffix
     - [ ] Name check for high poly
         - [ ] 1. Search for meshes with children
         - [ ] 2. Rename meshes to have their prefix be HighestParentName_high_Part0

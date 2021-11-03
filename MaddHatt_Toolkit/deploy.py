@@ -44,4 +44,5 @@ for root, dirs, files in os.walk(export_directory):
                 zfile.write(os.path.join(root, file), os.path.relpath(os.path.join(root, file),os.path.join(export_directory, '..')))
 zfile.close()
 
+# TODO: move the zip file to a builds directory
 # TODO: Can external python scripts force reload blender script?
