@@ -6,9 +6,9 @@ from bpy.app.handlers import persistent
 bl_info = {
     "version": (0, 1),
     "blender": (2, 93, 0),
-    "name": "Incremental save to subfolder",
+    "name": "Better Backups",
     "author": "Patt @MaddHattPatt",
-    "description": "Saves files to subfolder with the name of the original blend file",
+    "description": "Saves files to a subfolder with the name of the original blend file",
     "category": "System"
     }
 
