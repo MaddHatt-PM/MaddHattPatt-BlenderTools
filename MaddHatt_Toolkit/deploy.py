@@ -1,5 +1,7 @@
 import os
+import shutil
 import zipfile
+import time
 
 # Get exact folder containing deploy.py 
 for root, dirs, files in os.walk(os.getcwd()):
@@ -44,5 +46,8 @@ for root, dirs, files in os.walk(export_directory):
                 zfile.write(os.path.join(root, file), os.path.relpath(os.path.join(root, file),os.path.join(export_directory, '..')))
 zfile.close()
 
-# TODO: move the zip file to a builds directory
+# Doesn't work correctly from vscode, but the python script by itself works
+build_dir = os.path.join(os.getcwd(), "Builds", zip_name)
+shutil.move(export_directory + ".zip", build_dir)
+
 # TODO: Can external python scripts force reload blender script?
