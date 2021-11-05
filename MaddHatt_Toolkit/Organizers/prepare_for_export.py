@@ -63,6 +63,7 @@ class MADDHATT_OT_final_check(bpy.types.Operator):
     def execute(self, context):
         error_printout = {}
         error_printout.setdefault("Non Meshes", [])
+        error_printout.setdefault("HiPoly object missing ID materials", [])
         error_printout.setdefault("Missing HiPoly Partner", [])
         error_printout.setdefault("Missing '_low'", [])
         error_printout.setdefault("Unapplied Modifiers", [])
@@ -102,6 +103,18 @@ class MADDHATT_OT_final_check(bpy.types.Operator):
                         error_printout["Unapplied Modifiers"].append(obj.name)
                         error_printout["Missing WNormal and Triangulate"].append(obj.name)
                         obj.hide_set(False)
+
+        for obj in bpy.data.collections[consts.HIGHPOLY].objects:
+
+            # Check for high poly meshes without an ID material
+            has_idmat = False
+            for mat_slot in obj.material_slots:
+                if "ID" in mat_slot.name:
+                    has_idmat = True
+                    break
+            
+            if (has_idmat == False):
+                error_printout["HiPoly object missing ID materials"].append(obj.name)
 
         output_text = ""
         errors_present = False
