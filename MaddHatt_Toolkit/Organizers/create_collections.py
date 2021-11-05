@@ -39,6 +39,7 @@ class MADDHATT_OT_create_export_collection(bpy.types.Operator):
             coll_color = "COLOR_05"
 
         else:
+            print("failed")
             return {"CANCELLED"}
 
         # Get or create the needed collection
@@ -64,8 +65,11 @@ class MADDHATT_OT_create_export_collection(bpy.types.Operator):
                 item.data.materials.clear()
                 item.data.materials.append(export_mat)
 
-        
         return {"FINISHED"}
+
+    # def invoke(self, context, coll_name:str):
+    #     self.coll_name = coll_name
+    #     return self.execute(context)
 
 classes = [
     MADDHATT_OT_create_organizer_collection,

@@ -20,8 +20,6 @@ class VIEW3D_PT_pipeline(bpy.types.Panel):
         row = layout.column(align=True)
         row.label(text="Workflow Helpers")
 
-        row.operator("maddhatt.quick_export_collection", text="Export lowpoly").coll_name = consts.LOWPOLY
-        row.operator("maddhatt.quick_export_collection", text="Export highpoly").coll_name = consts.HIGHPOLY
 
         # Circular Array Controls
         active_object = context.active_object
@@ -46,16 +44,33 @@ class VIEW3D_PT_pipeline(bpy.types.Panel):
 
         else:
             if len(bpy.data.collections.get("Organizer").objects) == 0:
-                processor_text = "Add objects to Organizer"
+                processor_text = "Organizer is empty"
+                icon = "NONE"
             else:
                 processor_text = "Process Organization"
+                icon = "PACKAGE"
 
-            row.operator("maddhatt.process_organization", text=processor_text)
-            row.operator("maddhatt.create_export_collection", text="Setup Low Poly", icon="COLLECTION_NEW").coll_name = "Low_Poly"
-            row.operator("maddhatt.create_export_collection", text="Setup High Poly", icon="COLLECTION_NEW").coll_name = "High_Poly"
+            row.operator("maddhatt.process_organization", text=processor_text, icon=icon)
+            # row.operator("maddhatt.create_export_collection", text="Setup Low Poly", icon="COLLECTION_NEW").coll_name = "Low_Poly"
+            # row.operator("maddhatt.create_export_collection", text="Setup High Poly", icon="COLLECTION_NEW").coll_name = "High_Poly"
 
-            row.operator("maddhatt.add_final_modifiers", text="Add Final Modifiers")
+            needs_mods = False
+            modname_w_normals = "MHtk-WNormals"
+            modname_triangulate = "MHtk-Triangulate"
+            for obj in bpy.data.collections[consts.LOWPOLY].objects:
+                if obj.modifiers.get(modname_w_normals, None) is None and obj.modifiers.get(modname_triangulate, None) is None:
+                    needs_mods = True
+                    break
+
+
+            row.separator()
+
             row.operator("maddhatt.final_check", text="Reveal export issues")
+            if needs_mods:
+                row.operator("maddhatt.add_final_modifiers", text="Add Final Modifiers")
+            export_col = row.row(align=True)
+            export_col.operator("maddhatt.quick_export_collection", text="Low Poly", icon="EXPORT").coll_name = consts.LOWPOLY
+            export_col.operator("maddhatt.quick_export_collection", text="High Poly", icon="EXPORT").coll_name = consts.HIGHPOLY
 
         layout.separator()
 

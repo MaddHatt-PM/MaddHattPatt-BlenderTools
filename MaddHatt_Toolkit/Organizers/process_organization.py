@@ -50,7 +50,8 @@ class MADDHATT_OT_process_organization(bpy.types.Operator):
         bpy.context.view_layer.layer_collection.children[consts.ORGANIZER].exclude = True
         bpy.context.view_layer.layer_collection.children[consts.TOOLS].exclude = True
 
-
+        bpy.ops.maddhatt.create_export_collection(coll_name=consts.HIGHPOLY)
+        bpy.ops.maddhatt.create_export_collection(coll_name=consts.LOWPOLY)
 
         return {"FINISHED"}
 

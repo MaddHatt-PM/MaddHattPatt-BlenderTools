@@ -11,6 +11,10 @@ class MADDHATT_OT_quick_export_collection(bpy.types.Operator):
     coll_name: bpy.props.StringProperty(name="target_coll")
 
     def execute(self, context):
+        if bpy.data.is_saved is False:
+            self.report({"ERROR"}, "Please save the file first")
+            return {"CANCELLED"}
+
         target_coll = bpy.context.view_layer.layer_collection.children[self.coll_name]
         
         target_coll_exclude_prev = target_coll.exclude
