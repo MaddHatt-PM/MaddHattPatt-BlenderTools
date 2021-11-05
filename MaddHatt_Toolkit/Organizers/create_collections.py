@@ -67,10 +67,6 @@ class MADDHATT_OT_create_export_collection(bpy.types.Operator):
 
         return {"FINISHED"}
 
-    # def invoke(self, context, coll_name:str):
-    #     self.coll_name = coll_name
-    #     return self.execute(context)
-
 classes = [
     MADDHATT_OT_create_organizer_collection,
     MADDHATT_OT_create_export_collection,

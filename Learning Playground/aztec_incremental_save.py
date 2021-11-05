@@ -23,7 +23,7 @@ def backup_to_subfolder(dummy):
     time_suffix = "_" + month_id[now.month] + str(now.day).zfill(2) + "_" + str(now.hour).zfill(2) + '-' + str(now.minute).zfill(2)
     backup_filename = filename.replace(".blend", time_suffix + ".blend")
 
-    savefolder = filepath.replace(".blend", "") + '\\'
+    savefolder = filepath.replace(".blend", " - Backups") + '\\'
     if not os.path.exists(savefolder):
         os.makedirs(savefolder)
 
