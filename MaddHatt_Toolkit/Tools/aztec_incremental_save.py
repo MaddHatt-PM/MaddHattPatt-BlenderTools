@@ -3,15 +3,6 @@ import datetime
 import os
 from bpy.app.handlers import persistent
 
-bl_info = {
-    "version": (0, 1),
-    "blender": (2, 93, 0),
-    "name": "Incremental save to subfolder",
-    "author": "Patt @MaddHattPatt",
-    "description": "Saves files to subfolder with the name of the original blend file",
-    "category": "System"
-    }
-
 @persistent
 def backup_to_subfolder(dummy):
     filepath = bpy.data.filepath
@@ -29,6 +20,8 @@ def backup_to_subfolder(dummy):
 
     if not os.path.exists(savefolder + backup_filename):
         bpy.ops.wm.save_as_mainfile(filepath=savefolder + backup_filename, copy=True)
+
+    print ("being called")
 
 # ------------------------------------------
 # -- Addon-Boilerplate --
